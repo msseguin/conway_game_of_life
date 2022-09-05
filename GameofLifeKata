@@ -1,0 +1,49 @@
+from collections import deque
+
+def get_generation(cells, generations):
+    # pad the cells
+    rows = len(cells)
+    cols = len(cells[0])
+    
+    zeros = deque([0] * (cols+2))
+    
+    cells_padded = []
+    cells_padded.append(zeros)
+    
+    # pad the rows so we have an 8 adjeceny on all
+    for row in cells:
+        row_padded = []
+        row_padded.append(0)
+        for item in row:
+            row_padded.append(item) # append right
+        row_padded.append(0)
+        cells_padded.append(row_padded)
+        
+        
+    #now run through and get the subdomains
+    print(cells_padded)
+    
+    #cells_padded = list(deque((cells_padded_deq)))
+    
+    print(cells_padded)
+    
+    for i in range(1,rows-1,1):
+        for j in range(1,cols-1,1):
+            if cells_padded[i][j]:
+                alive_cells = cells_padded[i-1][j-1]+cells_padded[i-1][j]+cells_padded[i-1][j+1]+ \
+                cells_padded[i][j-1]+cells_padded[i][j+1]+\
+                cells_padded[i+1][j-1]+cells_padded[i+1][j]+cells_padded[i+1][j+1]
+                if alive_cells == 3:
+                    cells[i][j] = 1
+                elif alive_cells < 2 or alive_cells > 3:
+                    cells[i][j] = 0
+                else:
+                    cells[i][j] = 0
+    
+            
+    generations -=1
+    
+    if generations == 0:
+        cells = get_generation(cells,generations)
+    
+    return cells
