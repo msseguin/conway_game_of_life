@@ -7,6 +7,12 @@ def get_generation(cells, generations):
     
     zeros = deque([0] * (cols+2))
     
+    # output array
+    output_array = rows*[[0]*cols]
+    print(output_array)
+
+    
+    # pad the top fo the board
     cells_padded = []
     cells_padded.append(zeros)
     
@@ -15,10 +21,12 @@ def get_generation(cells, generations):
         row_padded = []
         row_padded.append(0)
         for item in row:
-            row_padded.append(item) # append right
+            row_padded.append(item) # append right element
         row_padded.append(0)
         cells_padded.append(row_padded)
-        
+    
+    # pad bottom of the board too
+    cells_padded.append(zeros)
         
     #now run through and get the subdomains
     print(cells_padded)
@@ -27,23 +35,33 @@ def get_generation(cells, generations):
     
     print(cells_padded)
     
-    for i in range(1,rows-1,1):
-        for j in range(1,cols-1,1):
-            if cells_padded[i][j]:
-                alive_cells = cells_padded[i-1][j-1]+cells_padded[i-1][j]+cells_padded[i-1][j+1]+ \
-                cells_padded[i][j-1]+cells_padded[i][j+1]+\
-                cells_padded[i+1][j-1]+cells_padded[i+1][j]+cells_padded[i+1][j+1]
-                if alive_cells == 3:
-                    cells[i][j] = 1
-                elif alive_cells < 2 or alive_cells > 3:
-                    cells[i][j] = 0
-                else:
-                    cells[i][j] = 0
-    
+    for i in range(1,rows+1,1):
+        for j in range(1,cols+1,1):
+            cells_above = cells_padded[i-1][j-1]+cells_padded[i-1][j]+cells_padded[i-1][j+1]    # add row above
+            cells_mid = cells_padded[i][j-1]+cells_padded[i][j+1]                               # add items in row
+            cells_below = cells_padded[i+1][j-1]+cells_padded[i+1][j]+cells_padded[i+1][j+1]    # add items in row below
+            alive_cells = cells_above + cells_mid + cells_below
+            
+            #get the cell status based on alive neighbours and current status
+            # shifted -1 in row and column to compensate for padding
+            output_array[i-1][j-1] = cell_status(alive_cells,cell[i-1][j-1])
             
     generations -=1
     
-    if generations == 0:
-        cells = get_generation(cells,generations)
+    if generations > 1:
+        output_array = get_generation(output_array,generations)
     
-    return cells
+    return output_array
+
+
+# function for determining the status of the cell (alive or dead)
+def cell_status(alive_cells,current_status):
+    if alive_cells == 3:
+        return 1
+    elif alive_cells == 2:
+        return current_status
+    elif alive_cells < 2 or alive_cells > 3:
+        return 0
+    else:
+        return 0
+    
