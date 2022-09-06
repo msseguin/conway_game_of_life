@@ -5,11 +5,10 @@ def get_generation(cells, generations):
     rows = len(cells)
     cols = len(cells[0])
     
-    zeros = deque([0] * (cols+2))
+    zeros = [0] * (cols+2)
     
     # output array
-    output_array = rows*[[0]*cols]
-    print(output_array)
+    #output_array = rows*[[0]*cols]
 
     
     # pad the top fo the board
@@ -27,10 +26,7 @@ def get_generation(cells, generations):
     
     # pad bottom of the board too
     cells_padded.append(zeros)
-        
-    #now run through and get the subdomains
-    print(cells_padded)
-    
+
     #cells_padded = list(deque((cells_padded_deq)))
     
     print(cells_padded)
@@ -41,12 +37,16 @@ def get_generation(cells, generations):
             cells_mid = cells_padded[i][j-1]+cells_padded[i][j+1]                               # add items in row
             cells_below = cells_padded[i+1][j-1]+cells_padded[i+1][j]+cells_padded[i+1][j+1]    # add items in row below
             alive_cells = cells_above + cells_mid + cells_below
+            #print(alive_cells)
             
             #get the cell status based on alive neighbours and current status
             # shifted -1 in row and column to compensate for padding
-            output_array[i-1][j-1] = cell_status(alive_cells,cell[i-1][j-1])
+            print(cell_status(alive_cells,cells[i-1][j-1]))
+            output_array[(i-1)][(j-1)] = cell_status(alive_cells,cells[i-1][j-1])
+            print(output_array)
             
     generations -=1
+    print(output_array)
     
     if generations > 1:
         output_array = get_generation(output_array,generations)
