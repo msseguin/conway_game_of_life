@@ -29,15 +29,18 @@ def get_generation(cells, generations):
         cells_padded.append(zeros)
 
         # do the middle
-        for i in range(1,rows+1,1):
+        for i in range(0,rows+1,1):
             row = []
             for j in range(1,cols+1,1):
                 if i == 0:
                     cells_above = 0
+                elif j == 0:
+                    cells_above =cells_padded[i-1][j]+cells_padded[i-1][j+1]
+                elif j == cols+1:
+                    cells_above = cells_padded[i-1][j-1]+cells_padded[i-1][j]
                 else:
                     cells_above = cells_padded[i-1][j-1]+cells_padded[i-1][j]+cells_padded[i-1][j+1]    # add row above
-                if j == 0:
-                    cells_mid = 
+        
                 cells_mid = cells_padded[i][j-1]+cells_padded[i][j+1]                               # add items in row
                 cells_below = cells_padded[i+1][j-1]+cells_padded[i+1][j]+cells_padded[i+1][j+1]    # add items in row below
                 alive_cells = cells_above + cells_mid + cells_below
