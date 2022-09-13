@@ -10,7 +10,7 @@ def get_generation(cells, generations):
     #remove padding
     output_lists = trim_array(output_lists)
     
-    # return result
+
     return output_lists
 
 # def generations_rec(cells, generations):
@@ -39,35 +39,11 @@ def generations_rec(cells, generations):
         for i in range(0,rows+2,1):
             row = []
             for j in range(0,cols+2,1):
+                cells_above = get_rows_above(cells_padded,i,j,cols)
+                cells_mid = get_current_row(cells_padded,i,j,cols)
+                cells_below = get_row_below(cells_padded,i,j,rows,cols)
                 
-                #row above
-                if i == 0:
-                    cells_above = 0
-                elif j == 0:
-                    cells_above =cells_padded[i-1][j]+cells_padded[i-1][j+1]
-                elif j == cols+1:
-                    cells_above = cells_padded[i-1][j-1]+cells_padded[i-1][j]
-                else:
-                    cells_above = cells_padded[i-1][j-1]+cells_padded[i-1][j]+cells_padded[i-1][j+1]    # add row above
-                
-                # row equal
-                if j == 0:
-                    cells_mid = cells_padded[i][j+1]
-                elif j == cols+1:
-                    cells_mid = cells_padded[i][j-1]
-                else:
-                    cells_mid = cells_padded[i][j-1]+cells_padded[i][j+1]
-                
-                # rows below
-                if i == rows+1:
-                    cells_below = 0
-                elif j == 0:
-                    cells_below = cells_padded[i+1][j]+cells_padded[i+1][j+1]
-                elif j == cols+1:
-                    cells_below = cells_padded[i+1][j-1]+cells_padded[i+1][j]
-                else:
-                    cells_below = cells_padded[i+1][j-1]+cells_padded[i+1][j]+cells_padded[i+1][j+1]
-                    
+               
                     
                 # see if there are any alive cells
                 alive_cells = cells_above + cells_mid + cells_below
@@ -88,7 +64,50 @@ def generations_rec(cells, generations):
     else:
         cells = trim_array(cells)
         return cells
-    
+
+# def get_row_below(cells_padded,i,j,rows,cols)
+# get total cells around in row above
+def get_row_below(cells_padded,i,j,rows,cols):
+    # rows below
+    if i == rows+1:
+        cells_below = 0
+    elif j == 0:
+        cells_below = cells_padded[i+1][j]+cells_padded[i+1][j+1]
+    elif j == cols+1:
+        cells_below = cells_padded[i+1][j-1]+cells_padded[i+1][j]
+    else:
+        cells_below = cells_padded[i+1][j-1]+cells_padded[i+1][j]+cells_padded[i+1][j+1]
+    return cells_below
+                    
+
+# def get_current_row(cells_padded,i,j,cols):
+# get total cells around current row
+def get_current_row(cells_padded,i,j,cols):
+    # row equal
+    if j == 0:
+        cells_mid = cells_padded[i][j+1]
+    elif j == cols+1:
+        cells_mid = cells_padded[i][j-1]
+    else:
+        cells_mid = cells_padded[i][j-1]+cells_padded[i][j+1]
+    return cells_mid
+
+# def get_rows_above(cells_padded,i,j,cols):
+# get total cells around current cell in row above that are alive
+def get_rows_above(cells_padded,i,j,cols):
+    #row above
+    if i == 0:
+        cells_above = 0
+    elif j == 0:
+        cells_above =cells_padded[i-1][j]+cells_padded[i-1][j+1]
+    elif j == cols+1:
+        cells_above = cells_padded[i-1][j-1]+cells_padded[i-1][j]
+    else:
+        cells_above = cells_padded[i-1][j-1]+cells_padded[i-1][j]+cells_padded[i-1][j+1]    # add row above
+                
+    return cells_above
+
+
 # def build_padded_cells()
 # adds a row of padding around all 4 edges of the 2d list
 def build_padded_cells(cells):
@@ -129,26 +148,34 @@ def cell_status(alive_cells,current_status):
     else:
         return 0
 
+# def trim_array(output_lst)
+# trims the array on all sides
 def trim_array(output_lst):
     # do while loop to trim the 2d list
     first_row_sum,last_row_sum,first_col_sum,last_col_sum = calculate_edge_sums(output_lst)
     
     while first_row_sum == 0 or last_row_sum == 0 or first_col_sum == 0 or last_col_sum == 0:
-       #trims the 2d list of any empty rows or columns
-        if first_row_sum == 0:
-            output_lst = output_lst[1:][:]
-        if last_row_sum == 0:
-            output_lst = output_lst[:len(output_lst)-1][:]
-        if first_col_sum == 0:
-            for row in output_lst:
-                del row[0]
-        if last_col_sum == 0:
-            for row in output_lst:
-                del row[len(row)-1]
+        output_lst = trim_sides(first_row_sum,last_row_sum,first_col_sum,last_col_sum,output_lst)
         
         #recalulate the sums
         first_row_sum,last_row_sum,first_col_sum,last_col_sum = calculate_edge_sums(output_lst)
         
+    return output_lst
+
+#
+def trim_sides(first_row,last_row,first_col,last_col,output_lst):
+    #trims the 2d list of any empty rows or columns
+    if first_row == 0:
+        output_lst = output_lst[1:][:]
+    if last_row == 0:
+        output_lst = output_lst[:len(output_lst)-1][:]
+    if first_col == 0:
+        for row in output_lst:
+            del row[0]
+    if last_col == 0:
+        for row in output_lst:
+            del row[len(row)-1]
+    
     return output_lst
 
 # def
